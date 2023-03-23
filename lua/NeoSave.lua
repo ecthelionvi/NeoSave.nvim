@@ -121,7 +121,3 @@ function NeoSave.auto_save()
 end
 
 return NeoSave
-
-
-
-return NeoSave
