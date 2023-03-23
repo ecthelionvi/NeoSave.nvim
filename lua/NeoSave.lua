@@ -57,7 +57,7 @@ end
 local function save_enabled_files()
   create_config_dir()
   local json_data = vim.fn.json_encode(enabled_files)
-  vim.fn.writefile({json_data}, NEO_SAVE_FILE)
+  vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
 end
 
 -- Setup
@@ -69,6 +69,9 @@ NeoSave.setup = function(user_settings)
 
   -- Toggle-NeoSave
   user_cmd("ToggleNeoSave", "lua require('NeoSave').toggle_auto_save()", {})
+
+  -- Clear-NeoSave
+  user_cmd("ClearNeoSave", "lua require('NeoSave').clear_enabled_files()", {})
 
   -- Auto-Save
   autocmd({ "InsertLeave", "TextChanged" }, {
@@ -119,9 +122,21 @@ function NeoSave.auto_save()
 
   if vim.bo.modified and fn.bufname("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
-            cmd(save_command)
+      cmd(save_command)
     end))
   end
 end
+
+local function clear_enabled_files()
+  enabled_files = setmetatable({}, {
+    __index = function()
+      return true
+    end
+  })
+  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
+    vim.fn.delete(NEO_SAVE_FILE)
+  end
+end
+
 
 return NeoSave
