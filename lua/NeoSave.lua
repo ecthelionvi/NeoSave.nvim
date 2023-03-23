@@ -18,6 +18,11 @@ local timer = vim.loop.new_timer()
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 local user_cmd = vim.api.nvim_create_user_command
+local enabled_files = setmetatable(load_enabled_files(), {
+  __index = function()
+    return true
+  end
+})
 
 -- Configuration
 local config = {
