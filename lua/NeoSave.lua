@@ -60,6 +60,17 @@ local function save_enabled_files()
   vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
 end
 
+local function clear_enabled_files()
+  enabled_files = setmetatable({}, {
+    __index = function()
+      return true
+    end
+  })
+  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
+    vim.fn.delete(NEO_SAVE_FILE)
+  end
+end
+
 -- Setup
 NeoSave.setup = function(user_settings)
   -- Merge user settings with default settings
@@ -126,17 +137,5 @@ function NeoSave.auto_save()
     end))
   end
 end
-
-local function clear_enabled_files()
-  enabled_files = setmetatable({}, {
-    __index = function()
-      return true
-    end
-  })
-  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
-    vim.fn.delete(NEO_SAVE_FILE)
-  end
-end
-
 
 return NeoSave
