@@ -28,17 +28,17 @@ local config = {
 
 local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_enabled.json"
 
-local function load_enabled_state()
+local function load_enabled_files()
   if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
     local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
     local decoded_data = vim.fn.json_decode(file_content)
-    return decoded_data.enabled or false
+    return decoded_data or {}
   else
-    return true
+    return {}
   end
 end
 
-config.enabled = load_enabled_state()
+local enabled_files = load_enabled_files()
 
 local function create_config_dir()
   local cache_dir = vim.fn.stdpath('cache')
@@ -47,10 +47,10 @@ local function create_config_dir()
   end
 end
 
-local function save_enabled_state()
+local function save_enabled_files()
   create_config_dir()
-  local json_data = vim.fn.json_encode({ enabled = config.enabled })
-  vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
+  local json_data = vim.fn.json_encode(enabled_files)
+  vim.fn.writefile({json_data}, NEO_SAVE_FILE)
 end
 
 -- Setup
@@ -76,8 +76,9 @@ end
 
 -- Toggle-Auto-Save
 function NeoSave.toggle_auto_save()
-  config.enabled = not config.enabled
-  save_enabled_state()
+  local current_file = fn.expand("%:p")
+  enabled_files[current_file] = not enabled_files[current_file]
+  save_enabled_files()
   NeoSave.notify_NeoSave()
 end
 
@@ -96,12 +97,14 @@ end
 
 -- Notify-NeoSave
 function NeoSave.notify_NeoSave()
-  vim.notify("NeoSave " .. (config.enabled and "Enabled" or "Disabled"))
+  local current_file = fn.expand("%:p")
+  vim.notify("NeoSave " .. (enabled_files[current_file] and "Enabled" or "Disabled"))
 end
 
 -- Auto-Save
 function NeoSave.auto_save()
-  if not config.enabled or NeoSave.excluded_bufs() or not NeoSave.valid_directory() or not vim.bo.modifiable then
+  local current_file = fn.expand("%:p")
+  if not enabled_files[current_file] or NeoSave.excluded_bufs() or not NeoSave.valid_directory() or not vim.bo.modifiable then
     return
   end
 
@@ -109,9 +112,13 @@ function NeoSave.auto_save()
 
   if vim.bo.modified and fn.bufname("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
-      cmd(save_command)
+            cmd(save_command)
     end))
   end
 end
+
+return NeoSave
+
+
 
 return NeoSave
