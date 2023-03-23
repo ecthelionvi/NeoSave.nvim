@@ -31,6 +31,9 @@ local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_enabled.json"
 local function load_enabled_files()
   if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
     local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
+    if file_content == "" then
+      return {}
+    end
     local decoded_data = vim.fn.json_decode(file_content)
     return decoded_data or {}
   else
