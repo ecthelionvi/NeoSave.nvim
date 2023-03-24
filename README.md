@@ -46,12 +46,6 @@ You can also create a keybinding to toggle NeoSave more conveniently:
 vim.keymap.set("n", "<leader>s", "<cmd>ToggleNeoSave<cr>", { noremap = true, silent = true })
 ```
 
-You can clear the list of enabled files in NeoSave using the `ClearNeoSave` command.
-
-```vim
-:ClearNeoSave
-```
-
 ## 📦  Installation
 
 1. Install via your favorite package manager.
