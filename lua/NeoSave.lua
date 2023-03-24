@@ -111,7 +111,7 @@ function NeoSave.auto_save()
     return
   end
 
-  if not disabled_files[current_file] and vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
+  if not vim.tbl_contains(disabled_files, current_file) and vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
       if config.write_all_bufs then
         cmd("silent! wall")
@@ -120,6 +120,13 @@ function NeoSave.auto_save()
       end
     end))
   end
+end
+
+-- Clear-DisabledFiles
+function NeoSave.clear_disabled_files()
+  disabled_files = {}
+  save_disabled_files()
+  NeoSave.notify_NeoSave()
 end
 
 return NeoSave
