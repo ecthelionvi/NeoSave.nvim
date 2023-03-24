@@ -27,18 +27,17 @@ NeoSave.nvim
 
 ## 📃 Introduction
 
-A Neovim plugin that automatically saves your files as you work, ensuring your progress is always preserved. NeoSave can be configured to save only the current buffer or all open buffers. You can also exclude specific files from auto-saving and toggle the feature on and off as needed.
+NeoSave is a Neovim plugin that automatically saves your files as you edit, ensuring your progress is preserved. Configure NeoSave to save either the current buffer or all open buffers, and easily toggle auto-saving on and off.
 
 ## ⚙️ Features
 
-- Option to save all open buffers or only the current buffer.
-- Automatically saves files when they are modified.
-- Exclude specific files from auto-saving.
+- Save all open buffers or only the current buffer.
+- Auto-save files upon modification.
 - Toggle auto-saving on and off.
 
 ## 🔄 Persistence
 
-NeoSave remembers the enabled state of the auto-save feature. When you toggle auto-saving on or off, the plugin will maintain that state across sessions.
+NeoSave remembers the auto-save enabled state across sessions.
 
 ## 🎛️ Usage
 
@@ -72,11 +71,6 @@ vim.keymap.set("n", "<leader>s", "<cmd>ToggleNeoSave<cr>", { noremap = true, sil
 use "ecthelionvi/NeoSave.nvim"
 ```
 
-- [vim-plug](https://github.com/junegunn/vim-plug)
-```VimL
-Plug "ecthelionvi/NeoSave.nvim"
-```
-
 2. Setup the plugin in your `init.lua`. This step is not needed with lazy.nvim if `opts` is set as above.
 
 ```lua
@@ -85,24 +79,20 @@ require("NeoSave").setup()
 
 ## 🔧 Configuration
 
-You can pass your config table into the `setup()` function or `opts` if you use lazy.nvim.
+Pass your config table into the setup() function or opts with lazy.nvim.
 
 The available options:
 
-- `write_all_bufs` (boolean) : whether to save all open buffers or only the current buffer
-  - `false` (default)
-- `excluded_files` (table of strings) : specific files to exclude from auto-saving
-  - `{}` (default)
-  - Example: `{ "config.lua", "secrets.txt" }`
-- `notify` (boolean) : whether to show a notification when toggling auto-saving
-  - `true` (default)
+- `enabled` (boolean): enable or disable auto-saving by default
+  - true (default)
+- `write_all_bufs` (boolean): save all open buffers or only the current buffer
+  - false (default)
 
 ### Default config
 
 ```Lua
 local config = {
-   write_all_bufs = false,
-   excluded_files = {},
-   notify = true,
+  enabled = true,
+  write_all_bufs = false,
 }
 ```
