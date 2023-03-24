@@ -74,7 +74,7 @@ function NeoSave.toggle_NeoSave()
   local file_path = fn.expand('%:p')
   disabled_files[file_path] = not disabled_files[file_path]
   NeoSave.save_disabled_files()
-  NeoSave.notify_NeoColumn()
+  NeoSave.notify_NeoSave()
 end
 
 -- Valid-Dir
