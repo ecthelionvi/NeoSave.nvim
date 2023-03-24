@@ -22,7 +22,6 @@ local user_cmd = vim.api.nvim_create_user_command
 
 -- Configuration
 local config = {
-  enabled = true,
   write_all_bufs = false,
 }
 
