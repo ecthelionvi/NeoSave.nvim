@@ -81,8 +81,8 @@ end
 
 -- Toggle-Auto-Save
 function NeoSave.toggle_auto_save()
-  local current_file = fn.expand("%:p")
-  disabled_files[current_file] = nil
+  local file_path = fn.expand('%:p')
+  disabled_files[file_path] = not disabled_files[file_path]
   save_disabled_files()
   NeoSave.notify_NeoSave()
 end
