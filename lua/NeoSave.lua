@@ -23,28 +23,28 @@ local user_cmd = vim.api.nvim_create_user_command
 -- Configuration
 local config = {
   write_all_bufs = false,
+  custom_NeoSave = {},
 }
 
-local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled.json"
+local DISABLED_FILES_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled_files.json"
 
 local function load_disabled_files()
-  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
-    local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
-    if file_content ~= "" then
-      local decoded_data = vim.fn.json_decode(file_content)
-      if not vim.tbl_isempty(decoded_data) then
-        return decoded_data
+  if vim.fn.filereadable(DISABLED_FILES_FILE) == 1 then
+    local file_content = table.concat(vim.fn.readfile(DISABLED_FILES_FILE))
+    local decoded_data = vim.fn.json_decode(file_content)
+    local disabled = {}
+    if decoded_data ~= nil then
+      for _, filename in ipairs(decoded_data) do
+        disabled[filename] = true
       end
     end
+    return disabled
+  else
+    return {}
   end
-  return {}
 end
 
-local disabled_files = setmetatable(load_disabled_files(), {
-  __index = function()
-    return false
-  end
-})
+local disabled_files = load_disabled_files()
 
 local function create_config_dir()
   local cache_dir = vim.fn.stdpath('cache')
@@ -55,8 +55,14 @@ end
 
 local function save_disabled_files()
   create_config_dir()
-  local json_data = vim.fn.json_encode(disabled_files)
-  vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
+  local items = {}
+  for k, v in pairs(disabled_files) do
+    if v then
+      table.insert(items, k)
+    end
+  end
+  local json_data = vim.fn.json_encode(items)
+  vim.fn.writefile({ json_data }, DISABLED_FILES_FILE)
 end
 
 -- Setup
@@ -69,12 +75,12 @@ NeoSave.setup = function(user_settings)
   -- Toggle-NeoSave
   user_cmd("ToggleNeoSave", "lua require('NeoSave').toggle_auto_save()", {})
 
-  -- Auto-Save
+  -- Apply-NeoSave
   autocmd({ "InsertLeave", "TextChanged" }, {
-    group = augroup("auto-save", { clear = true }),
+    group = augroup("apply-auto-save", { clear = true }),
     callback = function()
       vim.schedule(function()
-        NeoSave.auto_save()
+        NeoSave.apply_auto_save()
       end)
     end
   })
@@ -86,12 +92,6 @@ function NeoSave.toggle_auto_save()
   disabled_files[current_file] = not disabled_files[current_file]
   save_disabled_files()
   NeoSave.notify_NeoSave()
-end
-
--- Valid-Dir
-function NeoSave.valid_directory()
-  local filepath = fn.expand("%:h")
-  return filepath ~= "" and fn.isdirectory(filepath) == 1
 end
 
 -- Notify-NeoSave
@@ -108,7 +108,7 @@ end
 -- Auto-Save
 function NeoSave.auto_save()
   local current_file = fn.expand("%:p")
-  if disabled_files[current_file] or not NeoSave.valid_directory() or not vim.bo.modifiable then
+  if not NeoSave.valid_directory() or not vim.bo.modifiable or disabled_files[current_file] then
     return
   end
 
