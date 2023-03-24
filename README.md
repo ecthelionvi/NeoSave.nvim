@@ -19,21 +19,21 @@
 
 ![demo](https://raw.githubusercontent.com/ecthelionvi/Images/main/NeoSave.gif)
 
-## 📢 Introduction
+## 📢  Introduction
 
 NeoSave is a Neovim plugin that automatically saves your files as you edit, ensuring your progress is preserved. Configure NeoSave to save either the current buffer or all open buffers, and easily toggle auto-saving on and off.
 
-## ✨ Features
+## ✨  Features
 
 - Save all open buffers or only the current buffer.
 - Auto-save files upon modification.
 - Toggle auto-saving on and off.
 
-## 💾 Persistence
+## 💾  Persistence
 
 NeoSave remembers the auto-save enabled state across sessions.
 
-## 🛠️ Usage
+## 🛠️  Usage
 
 To toggle NeoSave on and off, you can use the `ToggleNeoSave` command:
 
@@ -46,7 +46,7 @@ You can also create a keybinding to toggle NeoSave more conveniently:
 vim.keymap.set("n", "<leader>s", "<cmd>ToggleNeoSave<cr>", { noremap = true, silent = true })
 ```
 
-## 📦 Installation
+## 📦  Installation
 
 1. Install via your favorite package manager.
 
@@ -69,7 +69,7 @@ use "ecthelionvi/NeoSave.nvim"
 require("NeoSave").setup()
 ```
 
-## 🔧 Configuration
+## 🔧  Configuration
 
 Pass your config table into the setup() function or opts with lazy.nvim.
 
