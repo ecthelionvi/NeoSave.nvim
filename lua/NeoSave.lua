@@ -10,11 +10,11 @@
 |__/  \__/ \_______/ \______/  \______/  \_______/    \_/    \_______/
 
 --]]
-
 local NeoSave = {}
 
 local fn = vim.fn
 local cmd = vim.cmd
+local api = vim.api
 local timer = vim.loop.new_timer()
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
@@ -102,6 +102,11 @@ end
 function NeoSave.notify_NeoSave()
   local current_file = fn.expand("%:p")
   vim.notify("NeoSave " .. (enabled_files[current_file] and "Enabled" or "Disabled"))
+
+  -- Clear the message area after 3 seconds (3000 milliseconds)
+  vim.defer_fn(function()
+    api.nvim_echo({ { '' } }, false, {})
+  end, 3000)
 end
 
 -- Auto-Save
