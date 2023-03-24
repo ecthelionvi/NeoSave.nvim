@@ -10,6 +10,7 @@
 |__/  \__/ \_______/ \______/  \______/  \_______/    \_/    \_______/
 
 --]]
+
 local NeoSave = {}
 
 local fn = vim.fn
@@ -23,7 +24,6 @@ local user_cmd = vim.api.nvim_create_user_command
 local config = {
   enabled = true,
   write_all_bufs = false,
-  excluded_files = {},
 }
 
 local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_enabled.json"
@@ -31,18 +31,14 @@ local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_enabled.json"
 local function load_enabled_files()
   if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
     local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
-    if file_content == "" then
-      return {}
+    if file_content ~= "" then
+      local decoded_data = vim.fn.json_decode(file_content)
+      if not vim.tbl_isempty(decoded_data) then
+        return decoded_data
+      end
     end
-    local decoded_data = vim.fn.json_decode(file_content)
-    if decoded_data ~= nil then
-      return decoded_data
-    else
-      return {}
-    end
-  else
-    return {}
   end
+  return {}
 end
 
 local enabled_files = setmetatable(load_enabled_files(), {
@@ -96,16 +92,9 @@ function NeoSave.toggle_auto_save()
   NeoSave.notify_NeoSave()
 end
 
--- Excluded-Buf
-function NeoSave.excluded_bufs()
-  local excluded_files = config.excluded_files
-  local current_file = fn.expand("%:p")
-  return vim.tbl_contains(excluded_files, current_file)
-end
-
 -- Valid-Dir
 function NeoSave.valid_directory()
-  local filepath = fn.expand("%:p:h")
+  local filepath = fn.expand("%:h")
   return filepath ~= "" and fn.isdirectory(filepath) == 1
 end
 
@@ -117,10 +106,8 @@ end
 
 -- Auto-Save
 function NeoSave.auto_save()
-  if timer == nil then return end
-
   local current_file = fn.expand("%:p")
-  if not enabled_files[current_file] or NeoSave.excluded_bufs() or not NeoSave.valid_directory() or not vim.bo.modifiable then
+  if not enabled_files[current_file] or not NeoSave.valid_directory() or not vim.bo.modifiable then
     return
   end
 
