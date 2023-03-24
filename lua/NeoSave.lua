@@ -35,7 +35,11 @@ local function load_enabled_files()
       return {}
     end
     local decoded_data = vim.fn.json_decode(file_content)
-    return decoded_data or {}
+    if decoded_data ~= nil then
+      return decoded_data
+    else
+      return {}
+    end
   else
     return {}
   end
@@ -113,6 +117,8 @@ end
 
 -- Auto-Save
 function NeoSave.auto_save()
+  if timer == nil then return end
+
   local current_file = fn.expand("%:p")
   if not enabled_files[current_file] or NeoSave.excluded_bufs() or not NeoSave.valid_directory() or not vim.bo.modifiable then
     return
@@ -120,7 +126,7 @@ function NeoSave.auto_save()
 
   local save_command = config.write_all_bufs and "silent! wall" or "silent! w"
 
-  if vim.bo.modified and fn.bufname("%") ~= "" and not timer:is_active() then
+  if vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
       cmd(save_command)
     end))
