@@ -1,5 +1,5 @@
 <h1 align="center">
-NeoSave.nvim
+💾 NeoSave.nvim
 </h1>
 
 <p align="center">
@@ -19,21 +19,21 @@ NeoSave.nvim
 
 ![demo](link-to-gif)
 
-## 📃 Introduction
+## 📢 Introduction
 
 NeoSave is a Neovim plugin that automatically saves your files as you edit, ensuring your progress is preserved. Configure NeoSave to save either the current buffer or all open buffers, and easily toggle auto-saving on and off.
 
-## ⚙️ Features
+## ✨ Features
 
 - Save all open buffers or only the current buffer.
 - Auto-save files upon modification.
 - Toggle auto-saving on and off.
 
-## 🔄 Persistence
+## 💾 Persistence
 
 NeoSave remembers the auto-save enabled state across sessions.
 
-## 🎛️ Usage
+## 🛠️ Usage
 
 To toggle NeoSave on and off, you can use the `ToggleNeoSave` command:
 
