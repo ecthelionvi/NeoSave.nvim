@@ -95,8 +95,7 @@ end
 
 -- Auto-Save
 function NeoSave.auto_save()
-  local current_file = fn.expand("%:p")
-  if vim.tbl_contains(disabled_files, current_file) or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
+  if disabled_files[fn.expand('%:p') or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
 
