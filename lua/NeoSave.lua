@@ -85,8 +85,7 @@ end
 
 -- Notify-NeoSave
 function NeoSave.notify_NeoSave()
-  local current_file = fn.expand("%:p")
-  vim.notify("NeoSave " .. (vim.tbl_contains(disabled_files, current_file) and "Disabled" or "Enabled"))
+  vim.notify("NeoSave " .. (disabled_files[fn.expand('%:p')] and "Disabled" or "Enabled"))
 
   -- Clear the message area after 3 seconds (3000 milliseconds)
   vim.defer_fn(function()
