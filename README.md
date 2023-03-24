@@ -82,7 +82,6 @@ The available options:
 
 ```Lua
 local config = {
-  enabled = true,
   write_all_bufs = false,
 }
 ```
