@@ -84,13 +84,13 @@ The available options:
 - `enabled` (boolean): enable or disable auto-saving by default
   - true (default)
 - `write_all_bufs` (boolean): save all open buffers or only the current buffer
-  - false (default)
+  - true (default)
 
 ### Default config
 
 ```Lua
 local config = {
   enabled = true,
-  write_all_bufs = false,
+  write_all_bufs = true,
 }
 ```
