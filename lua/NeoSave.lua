@@ -81,8 +81,12 @@ end
 
 -- Toggle-Auto-Save
 function NeoSave.toggle_auto_save()
-  local file_path = fn.expand('%:p')
-  disabled_files[file_path] = not disabled_files[file_path]
+  local current_file = fn.expand("%:p")
+  if vim.tbl_contains(disabled_files, current_file) then
+    vim.tbl_remove(disabled_files, current_file)
+  else
+    table.insert(disabled_files, current_file)
+  end
   save_disabled_files()
   NeoSave.notify_NeoSave()
 end
@@ -96,7 +100,7 @@ end
 -- Notify-NeoSave
 function NeoSave.notify_NeoSave()
   local current_file = fn.expand("%:p")
-  vim.notify("NeoSave " .. (disabled_files[current_file] and "Disabled" or "Enabled"))
+  vim.notify("NeoSave " .. (vim.tbl_contains(disabled_files, current_file) and "Disabled" or "Enabled"))
 
   -- Clear the message area after 3 seconds (3000 milliseconds)
   vim.defer_fn(function()
@@ -107,11 +111,11 @@ end
 -- Auto-Save
 function NeoSave.auto_save()
   local current_file = fn.expand("%:p")
-  if not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
+  if vim.tbl_contains(disabled_files, current_file) or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
 
-  if not vim.tbl_contains(disabled_files, current_file) and vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
+  if vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
       if config.write_all_bufs then
         cmd("silent! wall")
