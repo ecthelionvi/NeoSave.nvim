@@ -1,5 +1,5 @@
 <h1 align="center">
-💾 NeoSave.nvim
+💾  NeoSave.nvim
 </h1>
 
 <p align="center">
