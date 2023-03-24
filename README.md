@@ -46,8 +46,6 @@ To toggle NeoSave on and off, you can use the `ToggleNeoSave` command:
 ```vim
 :ToggleNeoSave
 ```
-This command will turn NeoSave on if it's currently off, and vice versa.
-
 You can also create a keybinding to toggle NeoSave more conveniently:
 
 ```lua
