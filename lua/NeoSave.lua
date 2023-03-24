@@ -69,9 +69,6 @@ NeoSave.setup = function(user_settings)
   -- Toggle-NeoSave
   user_cmd("ToggleNeoSave", "lua require('NeoSave').toggle_auto_save()", {})
 
-  -- Clear-NeoSave
-  user_cmd("ClearNeoSave", "lua require('NeoSave').clear_enabled_files()", {})
-
   -- Auto-Save
   autocmd({ "InsertLeave", "TextChanged" }, {
     group = augroup("auto-save", { clear = true }),
@@ -106,6 +103,14 @@ function NeoSave.notify_NeoSave()
   vim.defer_fn(function()
     api.nvim_echo({ { '' } }, false, {})
   end, 3000)
+
+  -- Delete the enabled files list if all entries are set to true
+  for _, enabled in pairs(enabled_files) do
+    if not enabled then
+      return
+    end
+  end
+  vim.fn.delete(NEO_SAVE_FILE)
 end
 
 -- Auto-Save
@@ -121,17 +126,6 @@ function NeoSave.auto_save()
     timer:start(135, 0, vim.schedule_wrap(function()
       cmd(save_command)
     end))
-  end
-end
-
-function NeoSave.clear_enabled_files()
-  enabled_files = setmetatable({}, {
-    __index = function()
-      return true
-    end
-  })
-  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
-    vim.fn.delete(NEO_SAVE_FILE)
   end
 end
 
