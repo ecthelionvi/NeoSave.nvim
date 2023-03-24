@@ -25,9 +25,9 @@ local config = {
   write_all_bufs = false,
 }
 
-local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_enabled.json"
+local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled.json"
 
-local function load_enabled_files()
+local function load_disabled_files()
   if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
     local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
     if file_content ~= "" then
@@ -40,9 +40,9 @@ local function load_enabled_files()
   return {}
 end
 
-local enabled_files = setmetatable(load_enabled_files(), {
+local disabled_files = setmetatable(load_disabled_files(), {
   __index = function()
-    return true
+    return false
   end
 })
 
@@ -53,9 +53,9 @@ local function create_config_dir()
   end
 end
 
-local function save_enabled_files()
+local function save_disabled_files()
   create_config_dir()
-  local json_data = vim.fn.json_encode(enabled_files)
+  local json_data = vim.fn.json_encode(disabled_files)
   vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
 end
 
@@ -83,8 +83,8 @@ end
 -- Toggle-Auto-Save
 function NeoSave.toggle_auto_save()
   local current_file = fn.expand("%:p")
-  enabled_files[current_file] = not enabled_files[current_file]
-  save_enabled_files()
+  disabled_files[current_file] = not disabled_files[current_file]
+  save_disabled_files()
   NeoSave.notify_NeoSave()
 end
 
@@ -97,26 +97,18 @@ end
 -- Notify-NeoSave
 function NeoSave.notify_NeoSave()
   local current_file = fn.expand("%:p")
-  vim.notify("NeoSave " .. (enabled_files[current_file] and "Enabled" or "Disabled"))
+  vim.notify("NeoSave " .. (disabled_files[current_file] and "Disabled" or "Enabled"))
 
   -- Clear the message area after 3 seconds (3000 milliseconds)
   vim.defer_fn(function()
     api.nvim_echo({ { '' } }, false, {})
   end, 3000)
-
-  -- Delete the enabled files list if all entries are set to true
-  for _, enabled in pairs(enabled_files) do
-    if not enabled then
-      return
-    end
-  end
-  vim.fn.delete(NEO_SAVE_FILE)
 end
 
 -- Auto-Save
 function NeoSave.auto_save()
   local current_file = fn.expand("%:p")
-  if not enabled_files[current_file] or not NeoSave.valid_directory() or not vim.bo.modifiable then
+  if disabled_files[current_file] or not NeoSave.valid_directory() or not vim.bo.modifiable then
     return
   end
 
