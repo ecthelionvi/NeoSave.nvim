@@ -25,11 +25,11 @@ local config = {
   write_all_bufs = false,
 }
 
-local NEO_SAVE_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled_files.json"
+local DISABLED_FILES_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled_files.json"
 
 local function load_disabled_files()
-  if vim.fn.filereadable(NEO_SAVE_FILE) == 1 then
-    local file_content = table.concat(vim.fn.readfile(NEO_SAVE_FILE))
+  if vim.fn.filereadable(DISABLED_FILES_FILE) == 1 then
+    local file_content = table.concat(vim.fn.readfile(DISABLED_FILES_FILE))
     if file_content ~= "" then
       local decoded_data = vim.fn.json_decode(file_content)
       if not vim.tbl_isempty(decoded_data) then
@@ -40,11 +40,7 @@ local function load_disabled_files()
   return {}
 end
 
-local disabled_files = setmetatable(load_disabled_files(), {
-  __index = function()
-    return false
-  end
-})
+local disabled_files = load_disabled_files()
 
 local function create_config_dir()
   local cache_dir = vim.fn.stdpath('cache')
@@ -56,7 +52,7 @@ end
 local function save_disabled_files()
   create_config_dir()
   local json_data = vim.fn.json_encode(disabled_files)
-  vim.fn.writefile({ json_data }, NEO_SAVE_FILE)
+  vim.fn.writefile({ json_data }, DISABLED_FILES_FILE)
 end
 
 -- Setup
@@ -68,6 +64,9 @@ NeoSave.setup = function(user_settings)
 
   -- Toggle-NeoSave
   user_cmd("ToggleNeoSave", "lua require('NeoSave').toggle_auto_save()", {})
+
+  -- Clear-DisabledFiles
+  user_cmd("ClearNeoSave", "lua require('NeoSave').clear_disabled_files()", {})
 
   -- Auto-Save
   autocmd({ "InsertLeave", "TextChanged" }, {
@@ -83,7 +82,7 @@ end
 -- Toggle-Auto-Save
 function NeoSave.toggle_auto_save()
   local current_file = fn.expand("%:p")
-  disabled_files[current_file] = not disabled_files[current_file]
+  disabled_files[current_file] = nil
   save_disabled_files()
   NeoSave.notify_NeoSave()
 end
@@ -108,15 +107,17 @@ end
 -- Auto-Save
 function NeoSave.auto_save()
   local current_file = fn.expand("%:p")
-  if enabled_files[current_file] == false or not NeoSave.valid_directory() or not vim.bo.modifiable then
+  if not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
 
-  local save_command = config.write_all_bufs and "silent! wall" or "silent! w"
-
-  if vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
+  if not disabled_files[current_file] and vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
-      cmd(save_command)
+      if config.write_all_bufs then
+        cmd("silent! wall")
+      else
+        cmd("silent! w")
+      end
     end))
   end
 end
