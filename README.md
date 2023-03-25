@@ -86,7 +86,7 @@ The available options:
 - `write_all_bufs` (boolean): save all open buffers or only the current buffer
   - false (default)
 
-### Default config
+### Default Config
 
 ```Lua
 local config = {
