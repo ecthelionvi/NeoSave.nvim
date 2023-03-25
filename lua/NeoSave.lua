@@ -127,7 +127,7 @@ function NeoSave.save_disabled_files()
   vim.fn.writefile({ json_data }, DISABLED_FILES_FILE)
 end
 
--- Clear-DisabledFiles
+-- Clear-Disabled-Files
 function NeoSave.clear_disabled_files()
   disabled_files = {}
   NeoSave.save_disabled_files()
