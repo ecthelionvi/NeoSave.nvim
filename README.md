@@ -31,7 +31,7 @@ NeoSave is a Neovim plugin that automatically saves your files as you edit, ensu
 
 ## 🔔  Default Behavior
 
-NeoSave is enabled by default. To toggle it off and on for specific files, see the "Usage" section below.
+NeoSave is enabled by default. To toggle it off and on for specific files, see below.
 
 ## 💾  Persistence
 
