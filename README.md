@@ -29,7 +29,7 @@ NeoSave is a Neovim plugin that automatically saves your files as you edit, ensu
 - Auto-save files upon modification.
 - Toggle auto-saving off and on.
 
-## 💾  Persistence
+## 💽  Persistence
 
 NeoSave remembers the auto-save enabled state across sessions.
 
