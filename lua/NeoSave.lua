@@ -186,14 +186,12 @@ end
 
 -- Save-View
 function NeoSave.save_view()
-  local file_path = fn.expand('%:p')
-
-  if disabled_files[file_path] then
+  if disabled_files[fn.expand('%:p')] or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
 
   local view = vim.fn.winsaveview()
-  saved_views[file_path] = view
+  saved_views[fn.expand('%:p')] = view
 
   local cache_dir = vim.fn.stdpath('cache')
   if vim.fn.isdirectory(cache_dir) == 0 then
