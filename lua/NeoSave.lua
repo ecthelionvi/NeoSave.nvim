@@ -105,7 +105,7 @@ NeoSave.setup = function(user_settings)
     })
 
     autocmd({ "BufWinEnter" }, {
-      group = augroup("auto-save", { clear = true }),
+      group = "auto-save-view",
       callback = function()
         vim.schedule(function()
           NeoSave.load_view()
