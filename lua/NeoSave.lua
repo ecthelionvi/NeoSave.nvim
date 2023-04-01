@@ -74,7 +74,7 @@ NeoSave.setup = function(user_settings)
   end
 
   -- Return early if the plugin is disabled
-  if not config.enabled then
+  if config.enabled == false then
     return
   end
 
