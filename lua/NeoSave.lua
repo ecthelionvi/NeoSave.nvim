@@ -186,12 +186,15 @@ end
 
 -- Save-View
 function NeoSave.save_view()
-  if disabled_files[fn.expand('%:p')] or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
+  if disabled_files[fn.expand('%:p')] or not NeoSave.valid_directory()
+      or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
 
+  local cursor = api.nvim_win_get_cursor(0) -- save cursor position
+
   local view = vim.fn.winsaveview()
-  saved_views[fn.expand('%:p')] = view
+  saved_views[fn.expand('%:p')] = { view, cursor } -- save view and cursor position
 
   local cache_dir = vim.fn.stdpath('cache')
   if vim.fn.isdirectory(cache_dir) == 0 then
@@ -205,9 +208,11 @@ end
 -- Load-View
 function NeoSave.load_view()
   local file_path = fn.expand('%:p')
-  local view = saved_views[file_path]
-  if view ~= nil then
+  local view_data = saved_views[file_path]
+  if view_data ~= nil then
+    local view, cursor = view_data[1], view_data[2] -- retrieve view and cursor position
     vim.fn.winrestview(view)
+    api.nvim_win_set_cursor(0, cursor)              -- restore cursor position
   end
 end
 
