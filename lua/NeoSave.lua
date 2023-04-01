@@ -95,7 +95,7 @@ NeoSave.setup = function(user_settings)
   })
 
   if config.save_views then
-    autocmd({ "BufLeave", "BufWipeout", "BufDelete", "BufUnload", "BufWinLeave" }, {
+    autocmd({ "BufLeave", "BufWinLeave" }, {
       group = augroup("auto-save-view", { clear = true }),
       callback = function()
         vim.schedule(function()
@@ -104,7 +104,7 @@ NeoSave.setup = function(user_settings)
       end
     })
 
-    autocmd({ "BufRead", "BufEnter", "BufWinEnter" }, {
+    autocmd({ "BufEnter", "BufWinEnter" }, {
       group = "auto-save-view",
       callback = function()
         vim.schedule(function()
