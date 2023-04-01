@@ -104,7 +104,7 @@ NeoSave.setup = function(user_settings)
       end
     })
 
-    autocmd({ "BufEnter", "BufWinEnter" }, {
+    autocmd({ "Filetype", "BufEnter", "BufWinEnter" }, {
       group = "auto-save-view",
       callback = function()
         vim.schedule(function()
