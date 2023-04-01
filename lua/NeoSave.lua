@@ -22,13 +22,10 @@ local user_cmd = vim.api.nvim_create_user_command
 
 -- Configuration
 local config = {
-  enabled = true,
-  save_views = true,
   write_all_bufs = false,
 }
 
 local DISABLED_FILES_FILE = vim.fn.stdpath('cache') .. "/neosave_disabled_files.json"
-local VIEWS_FILE = vim.fn.stdpath('cache') .. "/neosave_views.json"
 
 local function load_disabled_files()
   if vim.fn.filereadable(DISABLED_FILES_FILE) == 1 then
@@ -48,24 +45,6 @@ end
 
 local disabled_files = load_disabled_files()
 
-local function load_saved_views()
-  if vim.fn.filereadable(VIEWS_FILE) == 1 then
-    local file_content = table.concat(vim.fn.readfile(VIEWS_FILE))
-    local decoded_data = vim.fn.json_decode(file_content)
-    local views = {}
-    if decoded_data ~= nil then
-      for file_path, view in pairs(decoded_data) do
-        views[file_path] = view
-      end
-    end
-    return views
-  else
-    return {}
-  end
-end
-
-local saved_views = load_saved_views()
-
 -- Setup
 NeoSave.setup = function(user_settings)
   -- Merge user settings with default settings
@@ -73,16 +52,11 @@ NeoSave.setup = function(user_settings)
     config[k] = v
   end
 
-  -- Return early if the plugin is disabled
-  if config.enabled == false then
-    return
-  end
-
   -- Toggle-NeoSave
   user_cmd("ToggleNeoSave", "lua require('NeoSave').toggle_NeoSave()", {})
 
-  -- Clear-NeoSave
-  user_cmd("ClearNeoSave", "lua require('NeoSave').clear_all()", {})
+  -- Clear-DisabledFiles
+  user_cmd("ClearNeoSave", "lua require('NeoSave').clear_disabled_files()", {})
 
   -- Auto-Save
   autocmd({ "InsertLeave", "TextChanged" }, {
@@ -93,26 +67,6 @@ NeoSave.setup = function(user_settings)
       end)
     end
   })
-
-  if config.save_views then
-    autocmd({ "WinLeave" }, {
-      group = augroup("auto-save-view", { clear = true }),
-      callback = function()
-        vim.schedule(function()
-          NeoSave.save_view()
-        end)
-      end
-    })
-
-    autocmd({ "WinEnter" }, {
-      group = "auto-save-view",
-      callback = function()
-        vim.schedule(function()
-          NeoSave.load_view()
-        end)
-      end
-    })
-  end
 end
 
 -- Toggle-NeoSave
@@ -144,6 +98,7 @@ function NeoSave.auto_save()
   if disabled_files[fn.expand('%:p')] or not NeoSave.valid_directory() or not vim.bo.modifiable or not vim.bo.buftype == "" then
     return
   end
+
   if vim.bo.modified and fn.expand("%") ~= "" and not timer:is_active() then
     timer:start(135, 0, vim.schedule_wrap(function()
       if config.write_all_bufs then
@@ -176,50 +131,6 @@ end
 function NeoSave.clear_disabled_files()
   disabled_files = {}
   NeoSave.save_disabled_files()
-end
-
--- Clear-Saved-Views
-function NeoSave.clear_saved_views()
-  saved_views = {}
-  NeoSave.save_view()
-end
-
--- Save-View
-function NeoSave.save_view()
-  if disabled_files[fn.expand('%:p')] or not NeoSave.valid_directory()
-      or not vim.bo.modifiable or not vim.bo.buftype == "" then
-    return
-  end
-
-  local cursor = api.nvim_win_get_cursor(0) -- save cursor position
-
-  local view = vim.fn.winsaveview()
-  saved_views[fn.expand('%:p')] = { view, cursor } -- save view and cursor position
-
-  local cache_dir = vim.fn.stdpath('cache')
-  if vim.fn.isdirectory(cache_dir) == 0 then
-    vim.fn.mkdir(cache_dir, 'p')
-  end
-
-  local json_data = vim.fn.json_encode(saved_views)
-  vim.fn.writefile({ json_data }, VIEWS_FILE)
-end
-
--- Load-View
-function NeoSave.load_view()
-  local file_path = fn.expand('%:p')
-  local view_data = saved_views[file_path]
-  if view_data ~= nil then
-    local view, cursor = view_data[1], view_data[2] -- retrieve view and cursor position
-    vim.fn.winrestview(view)
-    api.nvim_win_set_cursor(0, cursor)              -- restore cursor position
-  end
-end
-
--- Clear-All
-function NeoSave.clear_all()
-  NeoSave.clear_disabled_files()
-  NeoSave.clear_saved_views()
 end
 
 return NeoSave
