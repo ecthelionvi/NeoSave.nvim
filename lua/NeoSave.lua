@@ -84,8 +84,12 @@ function NeoSave.valid_directory()
 end
 
 -- Notify-NeoSave
-function NeoSave.notify_NeoSave()
-  vim.notify("NeoSave " .. (disabled_files[fn.expand('%:p')] and "Disabled" or "Enabled"))
+function NeoSave.notify_NeoSave(clear)
+  if clear then
+    vim.notify("NeoSave Data Cleared")
+  else
+    vim.notify("NeoSave " .. (disabled_files[fn.expand('%:p')] and "Disabled" or "Enabled"))
+  end
 
   -- Clear the message area after 3 seconds (3000 milliseconds)
   vim.defer_fn(function()
@@ -131,6 +135,7 @@ end
 function NeoSave.clear_disabled_files()
   disabled_files = {}
   NeoSave.save_disabled_files()
+  NeoSave.notify_NeoSave(true)
 end
 
 return NeoSave
