@@ -128,11 +128,6 @@ end
 
 -- Save-Disabled-Files
 function NeoSave.save_Bufs()
-  local cache_dir = vim.fn.stdpath('cache')
-  if vim.fn.isdirectory(cache_dir) == 0 then
-    vim.fn.mkdir(cache_dir, 'p')
-  end
-
   local items = {}
   for k, v in pairs(disabled_files) do
     if v then
