@@ -108,7 +108,7 @@ end
 -- Valid-Buffer
 function NeoSave.valid_Buffer()
   local buftype = vim.bo.buftype
-  local disabled = { "help", "nofile", "terminal" }
+  local disabled = { "help", "prompt", "nofile", "terminal" }
   if not vim.tbl_contains(disabled, buftype) then return true end
 end
 
