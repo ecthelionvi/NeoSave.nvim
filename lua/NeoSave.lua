@@ -66,9 +66,7 @@ NeoSave.setup = function(user_settings)
   autocmd({ "InsertLeave", "TextChanged" }, {
     group = augroup("auto-save", { clear = true }),
     callback = function()
-      vim.schedule(function()
-        NeoSave.auto_Save()
-      end)
+      NeoSave.auto_Save()
     end
   })
 end
