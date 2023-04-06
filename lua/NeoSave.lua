@@ -80,10 +80,9 @@ function NeoSave.notify_NeoSave(clear)
   end
 
   -- Clear the message area after 3 seconds (3000 milliseconds)
-  vim.schedule(function()
-    vim.cmd("sleep 3000m")
-    vim.cmd("echo ''")
-  end)
+  vim.defer_fn(function()
+    api.nvim_echo({ { '' } }, false, {})
+  end, 3000)
 end
 
 -- Auto-Save
